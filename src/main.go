@@ -2,9 +2,13 @@ package main
 
 import (
 	"encoding/csv"
+	"flag"
 	"fmt"
 	"os"
 	"strconv"
+	"strings"
+
+	"golang.org/x/exp/slices"
 )
 
 type User struct {
@@ -16,18 +20,12 @@ type User struct {
 
 func main() {
 	fmt.Println("Hello World")
+	parseFlags()
 	fmt.Println(collectUsers())
 }
 
-func handleError(err error) {
-	if err != nil {
-		fmt.Println("Error:", err)
-		os.Exit(1)
-	}
-}
-
 func collectUsers() (users []User) {
-	f, err := os.Open("hr/passwd")
+	f, err := os.Open("passwd")
 	handleError(err)
 	defer f.Close()
 
@@ -57,4 +55,29 @@ func collectUsers() (users []User) {
 	}
 
 	return
+}
+
+func parseFlags() {
+	var path string
+	var format string
+
+	flag.StringVar(&path, "path", "", "path to export file")
+	flag.StringVar(&format, "format", "json", "output format for the user information eg, csv, json")
+
+	flag.Parse()
+
+	// Check validity of format flag
+	format = strings.ToLower(format)
+	if !slices.Contains([]string{"csv", "json"}, format) {
+		fmt.Println("Error: invalid format. Use 'json' or 'csv' instead.")
+		flag.Usage()
+		os.Exit(1)
+	}
+}
+
+func handleError(err error) {
+	if err != nil {
+		fmt.Println("Error:", err)
+		os.Exit(1)
+	}
 }
