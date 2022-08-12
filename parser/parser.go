@@ -20,7 +20,7 @@ type User struct {
 	Shell string `json:"shell"`
 }
 
-const PASSWD_FILE_PATH = "../lib/passwd"
+const PASSWD_FILE_PATH = "lib/passwd"
 
 func ParseFlags() (path, format string) {
 	flag.StringVar(&path, "path", "", "path to export file")
