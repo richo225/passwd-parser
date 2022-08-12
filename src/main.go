@@ -2,8 +2,10 @@ package main
 
 import (
 	"encoding/csv"
+	"encoding/json"
 	"flag"
 	"fmt"
+	"io"
 	"os"
 	"strconv"
 	"strings"
@@ -19,13 +21,40 @@ type User struct {
 }
 
 func main() {
-	fmt.Println("Hello World")
 	path, format := parseFlags()
 	users := collectUsers()
+
+	var output io.Writer
+	if path != "" {
+		// write user info to path in specified format
+		f, err := os.Create(path)
+		handleError(err)
+		defer f.Close()
+		output = f
+	} else {
+		// write user info to stdout
+		output = os.Stdout
+	}
+
+	if format == "csv" {
+		output.Write([]byte("id,name,home,shell\n"))
+		writer := csv.NewWriter(output)
+		for _, user := range users {
+			err := writer.Write([]string{strconv.Itoa(user.Id), user.Name, user.Home, user.Shell})
+			handleError(err)
+		}
+		writer.Flush()
+	}
+
+	if format == "json" {
+		data, err := json.MarshalIndent(users, "", "  ")
+		handleError(err)
+		output.Write(data)
+	}
 }
 
 func parseFlags() (path, format string) {
-	flag.StringVar(&path, "path", "passwd", "path to export file")
+	flag.StringVar(&path, "path", "", "path to export file")
 	flag.StringVar(&format, "format", "json", "output format for the user information eg, csv, json")
 
 	flag.Parse()
