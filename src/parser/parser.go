@@ -20,6 +20,8 @@ type User struct {
 	Shell string `json:"shell"`
 }
 
+const PASSWD_FILE_PATH = "../lib/passwd"
+
 func ParseFlags() (path, format string) {
 	flag.StringVar(&path, "path", "", "path to export file")
 	flag.StringVar(&format, "format", "json", "output format for the user information eg, csv, json")
@@ -38,7 +40,7 @@ func ParseFlags() (path, format string) {
 }
 
 func CollectUsers() (users []User) {
-	f, err := os.Open("passwd")
+	f, err := os.Open(PASSWD_FILE_PATH)
 	HandleError(err)
 	defer f.Close()
 
