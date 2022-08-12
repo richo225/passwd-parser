@@ -20,8 +20,25 @@ type User struct {
 
 func main() {
 	fmt.Println("Hello World")
-	parseFlags()
-	fmt.Println(collectUsers())
+	path, format := parseFlags()
+	users := collectUsers()
+}
+
+func parseFlags() (path, format string) {
+	flag.StringVar(&path, "path", "passwd", "path to export file")
+	flag.StringVar(&format, "format", "json", "output format for the user information eg, csv, json")
+
+	flag.Parse()
+
+	// Check validity of format flag
+	format = strings.ToLower(format)
+	if !slices.Contains([]string{"csv", "json"}, format) {
+		fmt.Println("Error: invalid format. Use 'json' or 'csv' instead.")
+		flag.Usage()
+		os.Exit(1)
+	}
+
+	return
 }
 
 func collectUsers() (users []User) {
@@ -55,24 +72,6 @@ func collectUsers() (users []User) {
 	}
 
 	return
-}
-
-func parseFlags() {
-	var path string
-	var format string
-
-	flag.StringVar(&path, "path", "", "path to export file")
-	flag.StringVar(&format, "format", "json", "output format for the user information eg, csv, json")
-
-	flag.Parse()
-
-	// Check validity of format flag
-	format = strings.ToLower(format)
-	if !slices.Contains([]string{"csv", "json"}, format) {
-		fmt.Println("Error: invalid format. Use 'json' or 'csv' instead.")
-		flag.Usage()
-		os.Exit(1)
-	}
 }
 
 func handleError(err error) {
