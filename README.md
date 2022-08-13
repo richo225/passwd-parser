@@ -18,24 +18,26 @@ These instructions will get you a copy of the project up and running on your loc
 Make sure you have Go version 1.19 or later.
 
 ```
-go version
-# go version go1.19 darwin/arm64
+$ go version
+go version go1.19 darwin/arm64
 ```
 
 ### Installing
 
-A step by step series of examples that tell you how to get a development env running.
-
-Say what the step will be
+Run the executable:
 
 ```
-Give the example
+$ bin/passwd-parser
 ```
 
-And repeat
+If you want to use your own password file, upload it in the lib directory and either re-build the binary or compile and execute with go run:
 
 ```
-until finished
+$ mv /path-to-your-file /lib/passwd
+
+$ go build -o bin/passwd-parser
+// OR
+$ go run main.go
 ```
 
 ## 🎈 Usage <a name="usage"></a>
